@@ -33,7 +33,7 @@ export const POSTS_PER_PAGE = 6;
 export async function getSiteSettings(): Promise<SiteSettings> {
   "use cache";
   cacheTag(tags.settings);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.siteSettingsResponse.parse(
     await wpQuery(Q.GET_SITE_SETTINGS),
@@ -49,7 +49,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 export async function getMenu(slug = "main"): Promise<MenuItem[]> {
   "use cache";
   cacheTag(tags.menu);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.menuResponse.parse(await wpQuery(Q.GET_MENU, { id: slug }));
   return mapMenuItems(data.menu?.menuItems?.nodes ?? []);
@@ -60,7 +60,7 @@ export async function getPosts(
 ): Promise<Paginated<PostCard>> {
   "use cache";
   cacheTag(tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.postsPageResponse.parse(
     await wpQuery(Q.GET_POSTS_PAGE, { first, after }),
@@ -76,7 +76,7 @@ export async function getPosts(
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   "use cache";
   cacheTag(tags.post(slug), tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.postResponse.parse(await wpQuery(Q.GET_POST_BY_SLUG, { slug }));
   return data.post ? mapPost(data.post) : null;
@@ -85,7 +85,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 export async function getAllPostSlugs(): Promise<{ slug: string; modified: string }[]> {
   "use cache";
   cacheTag(tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.postSlugsResponse.parse(await wpQuery(Q.GET_POST_SLUGS));
   return (data.posts?.nodes ?? []).map((node) => ({
@@ -97,7 +97,7 @@ export async function getAllPostSlugs(): Promise<{ slug: string; modified: strin
 export async function getPageByUri(uri: string): Promise<WpPage | null> {
   "use cache";
   cacheTag(tags.page(uri), tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.pageResponse.parse(await wpQuery(Q.GET_PAGE_BY_URI, { uri }));
   return data.page ? mapPage(data.page) : null;
@@ -108,7 +108,7 @@ export async function getAllPageUris(): Promise<
 > {
   "use cache";
   cacheTag(tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.pageUrisResponse.parse(await wpQuery(Q.GET_PAGE_URIS));
   return (data.pages?.nodes ?? []).map((node) => ({
@@ -123,7 +123,7 @@ export async function getAllPageUris(): Promise<
 export async function getCategories(): Promise<WpTerm[]> {
   "use cache";
   cacheTag(tags.categories);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.categoriesResponse.parse(await wpQuery(Q.GET_CATEGORIES));
   return (data.categories?.nodes ?? []).map(mapTerm);
@@ -135,7 +135,7 @@ export async function getCategoryArchive(
 ): Promise<CategoryArchive | null> {
   "use cache";
   cacheTag(tags.categories, tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const data = S.categoryPostsResponse.parse(
     await wpQuery(Q.GET_CATEGORY_POSTS, { slug, first, after }),
@@ -163,7 +163,7 @@ export async function getRelatedPosts(
 ): Promise<PostCard[]> {
   "use cache";
   cacheTag(tags.posts);
-  cacheLife("hours");
+  cacheLife("wordpress");
 
   const categoryIn = post.categories.map((category) => String(category.id));
   if (categoryIn.length === 0) return [];

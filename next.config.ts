@@ -83,6 +83,46 @@ function wordpressHostIsLocal(): boolean {
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  /**
+   * Custom cache profile for WordPress reads.
+   *
+   * The built-in profiles top out at `max` (revalidate 30 days, expire 1 year),
+   * which is shorter than we want. This content is treated as effectively
+   * static, so time-based revalidation is switched off in practice and the
+   * cache is refreshed by explicit purge instead.
+   *
+   *   stale      1 hour   — how long a client may reuse its router cache
+   *   revalidate 1 year   — when the server starts a background refresh
+   *   expire     Infinity — never evicted for being idle
+   *
+   * `expire` must be greater than `revalidate`, which is why it is `Infinity`
+   * rather than another year.
+   *
+   * CONSEQUENCE: with revalidation this far out, `/api/revalidate` is the only
+   * thing that makes edits appear. Wire the WordPress `save_post` hook to it
+   * (snippet at the top of app/api/revalidate/route.ts) or published changes
+   * will not show up until the next deploy.
+   */
+  cacheLife: {
+    wordpress: {
+      stale: 60 * 60,
+      revalidate: 60 * 60 * 24 * 365,
+      expire: Infinity,
+    },
+  },
+  /**
+   * Build year for the footer copyright, resolved once here.
+   *
+   * Reading the clock during render is a dynamic API under `cacheComponents`,
+   * so it has to sit behind a cache — and `cacheLife` keeps the *lowest* value
+   * across everything rendered in a request. A one-day cached clock read in
+   * the footer therefore capped every page at a one-day revalidate, silently
+   * defeating the year-long profile above. Inlining the value at build time
+   * removes the dynamic read entirely.
+   */
+  env: {
+    NEXT_PUBLIC_BUILD_YEAR: String(new Date().getFullYear()),
+  },
   turbopack: {
     rules: {
       "*.css": {

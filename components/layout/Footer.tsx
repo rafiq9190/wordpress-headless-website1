@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { Logo } from "@/components/layout/Logo";
 import { Container } from "@/components/ui/Container";
-import { currentYear } from "@/lib/time";
 import { getCategories } from "@/lib/wp/api";
 import type { MenuItem } from "@/lib/wp/types";
 
@@ -16,7 +15,11 @@ const productLinks = [
 export async function Footer({ menu }: { menu: MenuItem[] }) {
   // Topic list comes from WordPress, so publishing a new category updates the
   // footer with no code change.
-  const [categories, year] = await Promise.all([getCategories(), currentYear()]);
+  const categories = await getCategories();
+
+  // Inlined at build time by next.config.ts — see the note there. Reading the
+  // clock here would cap every route's revalidate at this component's cache life.
+  const year = process.env.NEXT_PUBLIC_BUILD_YEAR;
 
   return (
     <footer className="relative mt-24 border-t border-edge">

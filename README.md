@@ -76,8 +76,12 @@ the typography.
 
 ## Revalidation
 
-Content is cached for an hour. To publish instantly, have WordPress call the
-webhook on save:
+WordPress reads use the custom `wordpress` cache profile defined in
+`next.config.ts`: **revalidate 1 year, never expire**. Content is treated as
+effectively static, so time-based refreshing is off in practice.
+
+**This makes the webhook mandatory, not optional.** Nothing else will make an
+edit appear before the next deploy. Have WordPress call it on save:
 
 ```bash
 curl -X POST http://localhost:3000/api/revalidate \
