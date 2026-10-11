@@ -16,11 +16,11 @@ npm install
 npm run dev                     # http://localhost:3000
 ```
 
-| Variable | Purpose |
-| --- | --- |
-| `WP_GRAPHQL_URL` | WPGraphQL endpoint, e.g. `http://my-plugin-local.test/graphql` |
-| `WP_REVALIDATE_SECRET` | Shared secret for the revalidation webhook |
-| `NEXT_PUBLIC_SITE_URL` | Public origin, used for canonicals and the sitemap |
+| Variable               | Purpose                                                        |
+| ---------------------- | -------------------------------------------------------------- |
+| `WP_GRAPHQL_URL`       | WPGraphQL endpoint, e.g. `http://my-plugin-local.test/graphql` |
+| `WP_REVALIDATE_SECRET` | Shared secret for the revalidation webhook                     |
+| `NEXT_PUBLIC_SITE_URL` | Public origin, used for canonicals and the sitemap             |
 
 The WordPress site must be reachable at build time — `generateStaticParams`,
 the sitemap and the legacy-permalink redirects all read from it.
